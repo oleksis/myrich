@@ -1,5 +1,5 @@
 # MyRich
-Terminal emulator using [Rich](https://rich.readthedocs.io/en/latest/)
+Shell-like using [Rich](https://rich.readthedocs.io/en/latest/)
 
 ## Installing
 Install with pip
