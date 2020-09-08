@@ -21,7 +21,7 @@ def main(argv=None):
 
     while True:
         try:
-            prompt = "(rich) " + cwd + "%s" % ">" if os.name == "nt" else "$"
+            prompt = "(rich) " + cwd + "%s" % ">" if os.name == "nt" else "$ "
             command_line = input(prompt)
 
             if command_line and command_line.strip() == "exit":

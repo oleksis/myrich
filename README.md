@@ -11,25 +11,25 @@ $ pip install myrich
 Execute the command `myrich`
 ```bash
 $ myrich
-(rich) /home/user/$
+(rich) /home/user/$ 
 ```
 
 You use the internal command `markdown` for render a Markdown file
 ```bash
 $ myrich
-(rich) /home/user/$markdown README.md
+(rich) /home/user/$ markdown README.md
 ```
 
 ### Using the Console
 You can render the ouput the any command over rich terminal content
 ```bash
 $ myrich
-(rich) /home/user/$cat code.py
+(rich) /home/user/$ cat code.py
 ```
 
 ### Using Emoji
-You can render the ouput the any command over rich terminal content
+You can render the ouput with Emojis
 ```bash
 $ myrich
-(rich) /home/user/$echo :smiley:
+(rich) /home/user/$ echo :smiley:
 ```
