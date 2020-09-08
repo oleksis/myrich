@@ -25,10 +25,10 @@ setup(
 		"myrich.vendor",
     ],
     classifiers=[
-        "Topic :: Terminal :: Rich",
+        "Topic :: Terminals",
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
-        "License :: OSI Aproved :: MIT License",
+		"License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
