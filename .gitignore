@@ -1,0 +1,33 @@
+__pycache__
+*.pyc
+*.pyo
+*.class
+*~
+*.DS_Store
+*.kate-swp
+build/
+dist/
+*.egg-info
+MANIFEST
+README.txt
+.coverage
+cover/
+.tox
+.ipynb_checkpoints
+t-*.ipynb
+debug.log
+requirements.in
+
+# IntelliJ related files
+.idea
+*.iml
+
+tmp/
+venv/
+.venv/
+.env
+
+*.spec
+
+# VS Code related files
+.vscode
