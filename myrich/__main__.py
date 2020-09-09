@@ -43,6 +43,7 @@ def change_directory(path_str):
         os.chdir(path_str)
         cwd = os.getcwd()
     except FileNotFoundError as err:
+        path_str = os.getcwd()
         print_error(err)
 
     return cwd or path_str
