@@ -17,7 +17,7 @@ from . import __package_name__, __version__
 from .vendor.delegator import run
 
 
-console = Console()
+console = Console(force_terminal=True)
 
 
 def print_error(message):
