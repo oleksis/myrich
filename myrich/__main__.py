@@ -160,9 +160,7 @@ def start_shell(cwd=None):
     print_output("Bye :waving_hand:")
 
 
-if __name__ == "__main__":
-    retcode = 0
-
+def main():
     # Argument Parser
     my_parser = ArgumentParser(
         prog=__package_name__,
@@ -178,7 +176,7 @@ if __name__ == "__main__":
         action="store",
         nargs=REMAINDER,
         default=[],
-        help="Commands string list to be executed",
+        help="Commands to be executed",
     )
     my_parser.add_argument(
         "-c",
@@ -300,3 +298,7 @@ if __name__ == "__main__":
         retcode = c.return_code
     else:
         start_shell(cwd)
+
+
+if __name__ == "__main__":
+    main()

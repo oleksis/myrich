@@ -4,10 +4,10 @@
 from setuptools import setup
 
 
-# Get the version from myrich/version.py without importing the package
-exec(compile(open("myrich/version.py").read(), "myrich/version.py", "exec"))
+# Get the version from myrich/_version.py without importing the package
+exec(compile(open("myrich/_version.py").read(), "myrich/_version.py", "exec"))
 
-DESCRIPTION = "Shell-like using Rich"
+DESCRIPTION = "Shell-like using Rich for render rich text content"
 with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
 
@@ -40,5 +40,5 @@ setup(
         "Programming Language :: Python :: Implementation :: CPython",
     ],
     python_requires=">=3.6.1",
-    entry_points={"console_scripts": ["myrich = myrich:main"]},
+    entry_points={"console_scripts": ["myrich=myrich.__main__:main"]},
 )
