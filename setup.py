@@ -20,9 +20,10 @@ setup(
     url="https://github.com/oleksis/myrich",
     author="Oleksis Fraga",
     author_email="oleksis.fraga@gmail.com",
-    license="MIT License",
+    license="MIT",
     packages=["myrich", "myrich.vendor",],
     install_requires=["rich>=7.0.0",],
+    keywords="render rich text syntax highlighting markdown terminal console",
     classifiers=[
         "Topic :: Terminals",
         "Development Status :: 5 - Production/Stable",

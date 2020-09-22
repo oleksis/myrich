@@ -204,9 +204,6 @@ def run_command(commands, path_str):
     return c
 
 
-# TODO: Add Columns, Logging Handler
-
-
 def start_shell(cwd=None):
     "Start Shell-like"
     if not cwd:
@@ -232,12 +229,12 @@ def start_shell(cwd=None):
                 if command_line_firt[0] == "cd" and len(command_line_firt) == 2:
                     cwd = change_directory(command_line_firt[1])
                     continue
-                elif command_line_firt[0] == "markdown" and len(command_line_firt) > 1:
+                elif command_line_firt[0] == "markdown" and is_command_args(command_line_firt):
                     markdown = command_line_firt[-1]
                     options = parse_markdown_args(command_line_firt)
                     render2markdown(markdown, options)
                     continue
-                elif command_line_firt[0] == "syntax" and len(command_line_firt) > 1:
+                elif command_line_firt[0] == "syntax" and is_command_args(command_line_firt):
                     sfile_path = command_line_firt[-1]
                     options = parse_syntax_args(command_line_firt)
                     try:
