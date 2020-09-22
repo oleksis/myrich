@@ -10,12 +10,13 @@ if __package__ is None and not hasattr(sys, "frozen"):
     path = os.path.realpath(os.path.abspath(__file__))
     sys.path.insert(0, os.path.dirname(os.path.dirname(path)))
 
+import rich
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.syntax import Syntax
 
 from myrich import __package_name__, __version__
-from myrich.vendor.delegator import run
+from myrich.vendor.delegator import run, _expand_args
 
 
 console = Console()
@@ -44,7 +45,7 @@ def print_output(message, soft_wrap=False, page=False):
 
 
 def is_command_args(cmd):
-    return len(cmd.split(" ", 1)) == 2
+    return len(cmd) > 1
 
 
 def change_directory(path_str):
@@ -88,8 +89,18 @@ def render2markdown(file_string, options={}):
     )
 
 
+def is_path_file(file_path):
+    if not os.path.isfile(file_path):
+        print_error("Syntax require --path to fille")
+        return False
+    return True
+
+
 def render2syntax(file_path, options={}):
     "Render syntax to the console with Rich"
+    if not is_path_file(file_path):
+        return
+
     line_numbers = options.get("line_numbers", False)
     word_wrap = options.get("word_wrap", False)
     soft_wrap = options.get("soft_wrap", False)
@@ -105,6 +116,81 @@ def render2syntax(file_path, options={}):
     )
 
     print_output(syntax, soft_wrap=soft_wrap)
+
+
+def get_next_token(cmd_list, token):
+    tk = None
+    try:
+        idx = cmd_list.index(token)
+        if idx + 1 < len(cmd_list):
+            tk = cmd_list[idx + 1]
+    except ValueError:
+        pass
+    return tk
+
+
+def parse_markdown_args(command_list: list):
+    inline_code_lexer = None
+    code_theme = "monokai"
+    hyperlinks = justify = page = False
+
+    if "-i" in command_list or "--inline-code-lexer" in command_list:
+        inline_code_lexer = get_next_token(command_list, "-i") or get_next_token(
+            command_list, "--inline-code-lexer"
+        )
+
+    if "-t" in command_list or "--code-theme" in command_list:
+        code_theme = get_next_token(command_list, "-t") or get_next_token(
+            command_list, "--code-theme"
+        )
+
+    if "-y" in command_list or "--hyperlinks" in command_list:
+        hyperlinks = True
+
+    if "-j" in command_list or "--justify" in command_list:
+        justify = True
+
+    if "-p" in command_list or "--page" in command_list:
+        page = True
+
+    options = {
+        "inline_code_lexer": inline_code_lexer,
+        "code_theme": code_theme,
+        "justify": justify,
+        "hyperlinks": hyperlinks,
+        "page": page,
+    }
+    return options
+
+
+def parse_syntax_args(command_list: list):
+    background_color = None
+    code_theme = "monokai"
+    line_numbers = word_wrap = soft_wrap = False
+
+    if "-l" in command_list or "--line-numbers" in command_list:
+        line_numbers = True
+
+    if "-r" in command_list or "--wrap" in command_list:
+        word_wrap = True
+
+    if "-t" in command_list or "--code-theme" in command_list:
+        code_theme = get_next_token(command_list, "-t") or get_next_token(
+            command_list, "--code-theme"
+        )
+
+    if "-b" in command_list or "--background-color" in command_list:
+        background_color = get_next_token(command_list, "-b") or get_next_token(
+            command_list, "--background-color"
+        )
+
+    options = {
+        "line_numbers": line_numbers,
+        "word_wrap": word_wrap,
+        "theme": code_theme,
+        "background_color": background_color,
+    }
+    return options
 
 
 def run_command(commands, path_str):
@@ -137,20 +223,31 @@ def start_shell(cwd=None):
 
             if command_line and command_line.strip() == "exit":
                 break
-            # TODO: Parse subcommands options
-            if is_command_args(command_line):
-                if command_line[:2] == "cd":
-                    cwd = change_directory(command_line[3:])
+
+            # Expand subcommands options
+            command_line_list = _expand_args(command_line)
+
+            if command_line_list:
+                command_line_firt = command_line_list[0]
+                if command_line_firt[0] == "cd" and len(command_line_firt) == 2:
+                    cwd = change_directory(command_line_firt[1])
                     continue
-                elif command_line[:8] == "markdown":
-                    render2markdown(command_line[9:])
+                elif command_line_firt[0] == "markdown" and len(command_line_firt) > 1:
+                    markdown = command_line_firt[-1]
+                    options = parse_markdown_args(command_line_firt)
+                    render2markdown(markdown, options)
                     continue
-                elif command_line[:6] == "syntax":
-                    render2syntax(command_line[7:])
+                elif command_line_firt[0] == "syntax" and len(command_line_firt) > 1:
+                    sfile_path = command_line_firt[-1]
+                    options = parse_syntax_args(command_line_firt)
+                    try:
+                        render2syntax(sfile_path, options)
+                    except rich.color.ColorParseError as err:
+                        print_error(str(err))
                     continue
-            elif command_line[:6] == "myrich":
-                print_warning("No action taken to avoid nested environments")
-                continue
+                elif command_line_firt[0] == "myrich" and len(command_line_firt) == 1:
+                    print_warning("No action taken to avoid nested environments")
+                    continue
 
             _ = run_command(command_line, cwd)
         except KeyboardInterrupt:
