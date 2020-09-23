@@ -30,7 +30,6 @@ class MainTest(TestCase):
             stdin=PIPE,
             stdout=PIPE,
             stderr=PIPE,
-            shell=True,
             cwd=self.cwd,
             encoding=self.encoding,
         )

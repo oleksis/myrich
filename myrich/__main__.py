@@ -211,11 +211,9 @@ def start_shell(cwd=None):
 
     while True:
         try:
-            prompt = (
-                "[cyan](rich)[/cyan] [yellow]" + cwd + "[/yellow]" + "%s" % "> "
-                if os.name == "nt"
-                else "$ "
-            )
+            prompt = "[cyan](rich)[/cyan] [yellow]" + cwd + "[/yellow]"
+            prompt += "%s" % "> " if os.name == "nt" else " $ "
+
             command_line = console.input(prompt)
 
             if command_line and command_line.strip() == "exit":
