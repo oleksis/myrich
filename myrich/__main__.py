@@ -222,29 +222,40 @@ def start_shell(cwd=None):
                 break
 
             # Expand subcommands options
-            command_line_list = _expand_args(command_line)
+            try:
+                command_line_list = _expand_args(command_line)
+            except ValueError as err:
+                print_error(str(err))
+                continue
 
             if command_line_list:
                 command_line_firt = command_line_list[0]
-                if command_line_firt[0] == "cd" and len(command_line_firt) == 2:
-                    cwd = change_directory(command_line_firt[1])
-                    continue
-                elif command_line_firt[0] == "markdown" and is_command_args(command_line_firt):
-                    markdown = command_line_firt[-1]
-                    options = parse_markdown_args(command_line_firt)
-                    render2markdown(markdown, options)
-                    continue
-                elif command_line_firt[0] == "syntax" and is_command_args(command_line_firt):
-                    sfile_path = command_line_firt[-1]
-                    options = parse_syntax_args(command_line_firt)
-                    try:
-                        render2syntax(sfile_path, options)
-                    except rich.color.ColorParseError as err:
-                        print_error(str(err))
-                    continue
-                elif command_line_firt[0] == "myrich" and len(command_line_firt) == 1:
-                    print_warning("No action taken to avoid nested environments")
-                    continue
+                if command_line_firt:
+                    if command_line_firt[0] == "cd" and len(command_line_firt) == 2:
+                        cwd = change_directory(command_line_firt[1])
+                        continue
+                    elif command_line_firt[0] == "markdown" and is_command_args(
+                        command_line_firt
+                    ):
+                        markdown = command_line_firt[-1]
+                        options = parse_markdown_args(command_line_firt)
+                        render2markdown(markdown, options)
+                        continue
+                    elif command_line_firt[0] == "syntax" and is_command_args(
+                        command_line_firt
+                    ):
+                        sfile_path = command_line_firt[-1]
+                        options = parse_syntax_args(command_line_firt)
+                        try:
+                            render2syntax(sfile_path, options)
+                        except rich.color.ColorParseError as err:
+                            print_error(str(err))
+                        continue
+                    elif (
+                        command_line_firt[0] == "myrich" and len(command_line_firt) == 1
+                    ):
+                        print_warning("No action taken to avoid nested environments")
+                        continue
 
             _ = run_command(command_line, cwd)
         except KeyboardInterrupt:
@@ -381,7 +392,10 @@ def main():
 
     if args.syntax:
         if args.path:
-            render2syntax(args.path, vars(args))
+            try:
+                render2syntax(args.path, vars(args))
+            except rich.color.ColorParseError as err:
+                print_error(str(err))
         else:
             print_error("Syntax require --path to fille")
             sys.exit(1)
