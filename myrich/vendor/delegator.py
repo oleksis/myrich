@@ -87,10 +87,14 @@ class Command(object):
         if self.__out is not None:
             return self.__out
 
-        if self._uses_subprocess:
+        if self._uses_subprocess and not self.std_out.closed:
             self.__out = self.std_out.read()
 
         return self.__out
+
+    @out.setter
+    def out(self, str_out):
+        self.__out = str_out
 
     @property
     def std_err(self):
@@ -102,10 +106,14 @@ class Command(object):
         if self.__err is not None:
             return self.__err
 
-        if self._uses_subprocess:
+        if self._uses_subprocess and not self.std_err.closed:
             self.__err = self.std_err.read()
 
         return self.__err
+
+    @err.setter
+    def err(self, str_err):
+        self.__err = str_err
 
     @property
     def pid(self):
@@ -166,9 +174,7 @@ class Command(object):
         # consume stdout and stderr
         if self.blocking:
             try:
-                stdout, stderr = self.subprocess.communicate()
-                self.__out = stdout
-                self.__err = stderr
+                self.out, self.err = self.subprocess.communicate()
             except ValueError:
                 pass  # Don't read from finished subprocesses.
         else:
@@ -225,19 +231,20 @@ def _expand_args(command):
 
 def chain(command, timeout=TIMEOUT, cwd=None, env=None):
     commands = _expand_args(command)
-    data = None
+    data = ""
+    c = None
 
     for command in commands:
 
         c = run(command, block=False, timeout=timeout, cwd=cwd, env=env)
 
-        if data:
-            c.send(data)
+        try:
+            c.out, c.err = c.send(data)
             c.subprocess.stdin.close()
-            c.std_out.close()
-            c.std_err.close()
+        except ValueError:
+            pass  # Don't read from finished subprocesses.
 
-        data = c.out
+        data = c.out or ""
 
     return c
 

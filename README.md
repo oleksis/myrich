@@ -36,6 +36,12 @@ $ myrich
 (rich) /home/user $ cat code.py
 ```
 
+You can run several commands through pipes
+```bash
+$ myrich
+(rich) /home/user $ python -m myrich -S -l --path code.py | cat
+```
+
 ### Using Emoji
 You can render the ouput with Emojis
 ```bash
