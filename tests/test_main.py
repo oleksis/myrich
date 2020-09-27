@@ -10,6 +10,10 @@ from myrich import __version__ as version
 
 
 class MainTest(TestCase):
+    """ Main test with subprocess
+    NOTE: Rich package need be system-wide installed
+    """
+
     def setUp(self) -> None:
         self.cwd = ROOT_PATH
         self.args = []
@@ -49,12 +53,28 @@ class MainTest(TestCase):
     def test_myrich_version(self):
         self.test_run_myrich(["--version"])
         output = self.stdout
+        self.assertFalse(self.return_code)
         self.assertTrue(version in output)
+
+    def test_myrich_hello(self):
+        self.test_run_myrich(["echo Hello out there :waving_hand:"])
+        expected = "Hello out there"
+        output = self.stdout
+        self.assertFalse(self.return_code)
+        self.assertTrue(expected in output)
+
+    def test_myrich_cd_tests(self):
+        data = "cd tests"
+        self.test_run_myrich([], data)
+        output = self.stdout
+        self.assertFalse(self.return_code)
+        self.assertTrue("(rich)" in output and "tests" in output)
 
     def test_myrich_syntax(self):
         self.test_run_myrich(["-S", "-l", "--path", "setup.py"])
         expected = "setuptools"
         output = self.stdout
+        self.assertFalse(self.return_code)
         self.assertTrue(expected in output)
 
     def test_myrich_syntax_error_color(self):
@@ -66,30 +86,56 @@ class MainTest(TestCase):
         self.test_run_myrich(["-S", "-l", "setup.py"])
         output = self.stdout
         self.assertTrue("ERROR:" in output and "--path" in output)
-        self.assertTrue(self.return_code)
 
-    def test_myrich_markdown(self):
+    def test_myrich_markdown_file(self):
         self.test_run_myrich(["-M", "README.md"])
         link = "(https://rich.readthedocs.io/en/latest/)"
         output = self.stdout
+        self.assertFalse(self.return_code)
         self.assertTrue(link in output)
+
+    def test_myrich_markdown_string(self):
+        self.test_run_myrich(["-M", "# Header text of file"])
+        expected = "╔═"
+        output = self.stdout
+        self.assertFalse(self.return_code)
+        self.assertTrue(expected in output and "Header text of file" in output)
 
     def test_myrich_markdown_hyperlinks(self):
         # If your Terminal support links
         self.test_run_myrich(["-M", "-y", "README.md"])
         link = "(https://rich.readthedocs.io/en/latest/)"
         output = self.stdout
+        self.assertFalse(self.return_code)
         # No show in CMD
         self.assertFalse(link in output)
 
-    def test_myrich_shell(self):
+    def test_myrich_shell_syntax(self):
         data = "syntax -l --path setup.py"
         self.test_run_myrich([], data)
         output = self.stdout
+        self.assertFalse(self.return_code)
         self.assertTrue(data == self.stdin)
         self.assertTrue("10" in output)
         self.assertTrue("Shell-like using Rich" in output)
+
+    def test_myrich_shell_markdown(self):
+        data = "markdown -t README.md"
+        link = "(https://rich.readthedocs.io/en/latest/)"
+        self.test_run_myrich([], data)
+        self.assertTrue(data == self.stdin)
+        output = self.stdout
         self.assertFalse(self.return_code)
+        self.assertTrue(link in output)
+
+    def test_myrich_shell_myrich(self):
+        data = "myrich"
+        expected = "WARNING: No action taken to avoid nested environments"
+        self.test_run_myrich([], data)
+        self.assertTrue(data == self.stdin)
+        output = self.stdout
+        self.assertFalse(self.return_code)
+        self.assertTrue(expected in output)
 
     def tearDown(self) -> None:
         if self.process and isinstance(self.process, Popen):

@@ -25,7 +25,7 @@ def print_error(message):
 
 
 def print_warning(message):
-    console.print(message, style="bold yellow")
+    console.print("WARNING: " + message, style="bold yellow")
 
 
 def print_output(message, soft_wrap=False, page=False):
@@ -264,9 +264,9 @@ def start_shell(cwd=None):
     print_output("Bye :waving_hand:")
 
 
-def main():
+def main():  # pragma: no cover
     start_shell()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

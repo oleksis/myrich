@@ -232,7 +232,7 @@ def _expand_args(command):
 def chain(command, timeout=TIMEOUT, cwd=None, env=None):
     commands = _expand_args(command)
     data = ""
-    c = None
+    c = Command(commands, timeout=timeout)
 
     for command in commands:
 
