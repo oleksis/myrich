@@ -191,11 +191,13 @@ def parse_syntax_args(command_list: list):
     return options
 
 
-def run_command(commands, path_str):
+def run_command(commands_str, path_str):
     "Run commands in the path using chain subprocess"
-    c = chain(commands, cwd=path_str)
+    c = chain(commands_str, cwd=path_str)
 
-    print_output(c.out)
+    if c.out:
+        print_output(c.out)
+
     if c.err:
         print_error(c.err)
 
@@ -204,6 +206,8 @@ def run_command(commands, path_str):
 
 def start_shell(cwd=None):
     "Start Shell-like"
+    retuncode = 0
+
     if not cwd:
         cwd = os.getcwd()
 
@@ -215,6 +219,7 @@ def start_shell(cwd=None):
             command_line = console.input(prompt)
 
             if command_line and command_line.strip() == "exit":
+                retuncode = 0
                 break
 
             # Expand subcommands options
@@ -253,20 +258,76 @@ def start_shell(cwd=None):
                         print_warning("No action taken to avoid nested environments")
                         continue
 
-            _ = run_command(command_line, cwd)
+            retuncode = run_command(command_line, cwd)
         except EOFError as err:
             print_error(str(err))
+            retuncode = 1
             break
         except KeyboardInterrupt:
             print_error("Interrupted by user")
             sys.exit(1)
 
     print_output("Bye :waving_hand:")
+    return retuncode
 
 
 def main():  # pragma: no cover
-    start_shell()
+    from argparse import ArgumentParser
+    from myrich import __description__, __package_name__, __version__
+
+    retuncode = 0
+
+    # Argument Parser
+    my_parser = ArgumentParser(
+        prog=__package_name__,
+        allow_abbrev=False,
+        usage="%(prog)s [options] [commands ...]",
+        description=__description__,
+    )
+    # Add arguments
+    my_parser.version = __version__
+    my_parser.add_argument(
+        "commands",
+        action="store",
+        nargs="*",
+        default=None,
+        help="Commands to be executed",
+    )
+    my_parser.add_argument(
+        "-c",
+        "--force-color",
+        dest="force_color",
+        action="store_true",
+        default=None,
+        help="force color for non-terminals",
+    )
+    my_parser.add_argument(
+        "-w",
+        "--width",
+        type=int,
+        dest="width",
+        default=None,
+        help="width of output (default will auto-detect)",
+    )
+    my_parser.add_argument("-V", "--version", action="version")
+
+    args = my_parser.parse_args()
+    cwd = os.getcwd()
+
+    if args.width:
+        console._width = args.width
+
+    if args.force_color:
+        console._force_terminal = args.force_color
+
+    if args.commands:
+        c = run_command(" ".join(args.commands), cwd)
+        retuncode = c.return_code
+    else:
+        retuncode = start_shell(cwd)
+
+    return retuncode
 
 
 if __name__ == "__main__":  # pragma: no cover
-    main()
+    sys.exit(main())

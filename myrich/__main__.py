@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from argparse import ArgumentParser, REMAINDER
+from argparse import ArgumentParser
 import os
 import sys
 
@@ -24,11 +24,13 @@ from myrich.shell import (
 
 
 def main():
+    retuncode = 0
+
     # Argument Parser
     my_parser = ArgumentParser(
         prog=__package_name__,
         allow_abbrev=False,
-        usage="%(prog)s [options] commands",
+        usage="%(prog)s [options] [commands ...]",
         description=__description__,
     )
 
@@ -37,8 +39,8 @@ def main():
     my_parser.add_argument(
         "commands",
         action="store",
-        nargs=REMAINDER,
-        default=[],
+        nargs="*",
+        default=None,
         help="Commands to be executed",
     )
     my_parser.add_argument(
@@ -160,11 +162,13 @@ def main():
     elif args.markdown:
         render2markdown(" ".join(args.commands), vars(args))
     elif args.commands:
-        c = run_command(args.commands, cwd)
-        retcode = c.return_code
+        c = run_command(" ".join(args.commands), cwd)
+        retuncode = c.return_code
     else:
-        start_shell(cwd)
+        retuncode = start_shell(cwd)
+
+    return retuncode
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

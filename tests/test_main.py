@@ -10,7 +10,7 @@ from myrich import __version__ as version
 
 
 class MainTest(TestCase):
-    """ Main test with subprocess
+    """Main test with subprocess
     NOTE: Rich package need be system-wide installed
     """
 

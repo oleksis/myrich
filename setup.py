@@ -21,8 +21,13 @@ setup(
     author="Oleksis Fraga",
     author_email="oleksis.fraga@gmail.com",
     license="MIT",
-    packages=["myrich", "myrich.vendor",],
-    install_requires=["rich>=7.0.0",],
+    packages=[
+        "myrich",
+        "myrich.vendor",
+    ],
+    install_requires=[
+        "rich>=7.0.0",
+    ],
     keywords="render rich text syntax highlighting markdown terminal console",
     classifiers=[
         "Topic :: Terminals",

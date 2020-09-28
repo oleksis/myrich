@@ -17,7 +17,6 @@ cover/
 t-*.ipynb
 debug.log
 requirements.in
-Makefile
 
 # IntelliJ related files
 .idea

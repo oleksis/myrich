@@ -9,4 +9,10 @@ from ._version import version_info, __version__
 from rich import get_console
 
 
-__all__ = ["__package_name__", "version_info", "__version__", "get_console"]
+__all__ = [
+    "__description__",
+    "__package_name__",
+    "version_info",
+    "__version__",
+    "get_console",
+]
