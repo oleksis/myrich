@@ -321,7 +321,7 @@ def main():  # pragma: no cover
         console._force_terminal = args.force_color
 
     if args.commands:
-        c = run_command(args.commands, cwd)
+        c = run_command(" ".join(args.commands), cwd)
         retuncode = c.return_code
     else:
         retuncode = start_shell(cwd)

@@ -235,8 +235,8 @@ def chain(command, timeout=TIMEOUT, cwd=None, env=None):
     c = Command(commands, timeout=timeout)
 
     for command in commands:
-
-        c = run(command, block=False, timeout=timeout, cwd=cwd, env=env)
+        # command to str for use like shell prompt. RECOMENDED when shell=True
+        c = run(" ".join(command), block=False, timeout=timeout, cwd=cwd, env=env)
 
         try:
             c.out, c.err = c.send(data)

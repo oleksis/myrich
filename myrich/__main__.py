@@ -162,7 +162,7 @@ def main():
     elif args.markdown:
         render2markdown(" ".join(args.commands), vars(args))
     elif args.commands:
-        c = run_command(args.commands, cwd)
+        c = run_command(" ".join(args.commands), cwd)
         retuncode = c.return_code
     else:
         retuncode = start_shell(cwd)
